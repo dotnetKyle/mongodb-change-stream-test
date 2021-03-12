@@ -91,6 +91,9 @@ namespace ChangeStreamTest
                 {
                     try
                     {
+                        // might want to actually create an event inside the DAO 
+                        //   that way we are not depending on IChangeStreamCursor in the service
+                        //    this might make unit tests much harder
                         foreach (var notif in cursor.ToEnumerable(cancellationToken))
                         {
                             OnNewNotification?.Invoke(new NewNotificationEventArgs(
