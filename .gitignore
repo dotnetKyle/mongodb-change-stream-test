@@ -348,3 +348,7 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/src/ConsoleApp1/Core/Compression
+/src/ConsoleApp1/mongocrypt.dll
+/src/ConsoleApp1/libmongocrypt.so
+/src/ConsoleApp1/libmongocrypt.dylib
