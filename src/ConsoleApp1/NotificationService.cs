@@ -87,13 +87,15 @@ namespace ChangeStreamTest
         {
             try
             {
-                using (var cursor = _collection.Watch(_userLogin, cancellationToken))
+                using (IChangeStreamCursor<ChangeStreamDocument<Notification>> cursor = _collection.Watch(_userLogin, cancellationToken))
                 {
                     try
                     {
                         // might want to actually create an event inside the DAO 
                         //   that way we are not depending on IChangeStreamCursor in the service
                         //    this might make unit tests much harder
+                        //  Could also return cursor.ToEnumerable(cancellationToken) inside the DAO that way it simply returns IEnumerable<ChangeStreamDocument<Notification>>
+                        //   ChangeStreamDocument<Notification> can easily be faked by creating a bson document
                         foreach (var notif in cursor.ToEnumerable(cancellationToken))
                         {
                             cancellationToken.ThrowIfCancellationRequested();
