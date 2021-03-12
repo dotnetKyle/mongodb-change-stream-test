@@ -1,65 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ChangeStreamTest
 {
     class Program
     {
-        static CancellationTokenSource cancellationTokenSource;
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            cancellationTokenSource = new CancellationTokenSource();
-
             var settings = AppSettings.GetSettings();
-            var dao = new NotificationsCollection(settings, "kyle");
+            var service = new NotificationService(
+                "kyle", 
+                new NotificationsCollection(
+                    AppSettings.GetSettings()
+                )
+            );
 
-            await dao.InsertOneAsync(new Notification
-            {
-                Dismissed = false,
-                EventDtgUtc = DateTime.UtcNow,
-                Message = "Notification 1",
-                Type = "askldjf",
-                UserLogin = "kyle"
-            });
-            await dao.InsertOneAsync(new Notification
-            {
-                Dismissed = false,
-                EventDtgUtc = DateTime.UtcNow,
-                Message = "Notification 2",
-                Type = "askldjf",
-                UserLogin = "kyle"
-            });
-            await dao.InsertOneAsync(new Notification
-            {
-                Dismissed = false,
-                EventDtgUtc = DateTime.UtcNow,
-                Message = "Notification 3",
-                Type = "askldjf",
-                UserLogin = "kyle"
-            });
-
-            dao.OnNewChange += Dao_OnNewChange;
-            dao.OnNewNotification += Dao_OnNewNotification;
+            service.OnNewNotification += Service_OnNewNotification;
 
             Console.WriteLine("Connecting...");
+            service.StartListeningForNewNotification();
 
-            await dao.watchAsync(cancellationTokenSource.Token);
+            string currentServiceStatus = null;
+            while (true)
+            {
+                if(currentServiceStatus != service.ServiceStatus.ToString())
+                {
+                    currentServiceStatus = service.ServiceStatus.ToString();
+                    Console.WriteLine("Service Status:" + currentServiceStatus);
+                }
 
-            Console.WriteLine("Finished, exiting...");
+                if (service.ServiceStatus == ServiceStatus.InError)
+                    break;
+                if (service.ServiceStatus == ServiceStatus.Stopped)
+                    break;
+                // stay open
+            }
         }
 
-        private static void Dao_OnNewChange(object sender, string e)
+        private static void Service_OnNewNotification(NewNotificationEventArgs args)
         {
-            Console.WriteLine(e);
-        }
-
-        private static void Dao_OnNewNotification(object sender, Notification e)
-        {
-            Console.WriteLine(e.Message);
+            Console.WriteLine("{0} {1} - \"{2}\"",
+                args.Notification.Type,
+                args.Notification.DtgUtc.ToShortTimeString(),
+                args.Notification.Message
+            );
         }
     }
 }

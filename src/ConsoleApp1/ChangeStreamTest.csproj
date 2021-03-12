@@ -114,8 +114,11 @@
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
     <Compile Include="DAO.cs" />
+    <Compile Include="NewNotificationDTO.cs" />
+    <Compile Include="NewNotificationEventArgs.cs" />
     <Compile Include="Notifications.cs" />
     <Compile Include="NotificationsCollection.cs" />
+    <Compile Include="NotificationService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
