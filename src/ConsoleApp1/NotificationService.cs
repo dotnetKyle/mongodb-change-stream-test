@@ -96,6 +96,7 @@ namespace ChangeStreamTest
                         //    this might make unit tests much harder
                         foreach (var notif in cursor.ToEnumerable(cancellationToken))
                         {
+                            cancellationToken.ThrowIfCancellationRequested();
                             OnNewNotification?.Invoke(new NewNotificationEventArgs(
                                 new NewNotificationDTO 
                                 {
@@ -107,6 +108,11 @@ namespace ChangeStreamTest
                             ));
                         }
                     }
+                    catch(OperationCanceledException ex)
+                    {
+                        Console.WriteLine("Operation was canceled");
+                        throw ex;
+                    }
                     catch(Exception ex)
                     {
                         notificationServiceErrorCount++;
@@ -116,7 +122,7 @@ namespace ChangeStreamTest
                     }
                 }
             }
-            catch(TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 Console.WriteLine("Notification service cancellation requested");
             }

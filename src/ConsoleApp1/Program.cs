@@ -34,6 +34,9 @@ namespace ChangeStreamTest
                     break;
                 // stay open
             }
+
+            Console.WriteLine("Exiting, press any key to exit.");
+            Console.ReadKey();
         }
 
         private static void Service_OnNewNotification(NewNotificationEventArgs args)
